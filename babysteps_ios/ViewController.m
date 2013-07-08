@@ -12,6 +12,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *usernameField;
 @property (weak, nonatomic) IBOutlet UILabel *resultLabel;
 - (IBAction)createAccount:(id)sender;
+@property (weak, nonatomic) IBOutlet UIButton *createAccountButton;
 
 @end
 
@@ -36,8 +37,14 @@
     self.resultLabel.text = [[NSString alloc] initWithFormat:@"Trying to create new account for %@...", usernameString];
 
     // Build the JSON POST data
-    NSString *postData = @"{\"username\":\"ffff\",\"device_id\":\"device_id\",\"device_type\":\"device_type\"}";
-    
+    NSDictionary *postObject = [NSDictionary dictionaryWithObjectsAndKeys:
+                                usernameString, @"username",
+                                @"XXXXX", @"device_id",
+                                @"YYYYY", @"device_type",
+                                nil];
+    NSData *jsonObject = [NSJSONSerialization dataWithJSONObject:postObject options:nil error:nil];
+    NSString *postData = [[NSString alloc] initWithData:jsonObject encoding:NSUTF8StringEncoding];
+
     // Asynchronously submit the POST request
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc]
                                     initWithURL:[NSURL URLWithString:@"http://localhost:9000/users"]];
@@ -116,11 +123,14 @@
     
     if ([jsonStatus isEqualToString:@"success"]) {
         // Deactivate submit button
-        
+        self.resultLabel.text = [[NSString alloc] initWithFormat:@"%@\n\nYour account has been created.", self.resultLabel.text];
+        [self.createAccountButton setEnabled:false];
     } else if ([jsonStatus isEqualToString:@"duplicate"]) {
         // Select input field
+        self.resultLabel.text = @"That username already exists. Please try another.";
+        [self.usernameField becomeFirstResponder];
     } else if ([jsonStatus isEqualToString:@"fail"]) {
-        // Show error
+        // Show error (but it's already there!)
     } else {
         // Unrecognized status
         self.resultLabel.text = [[NSString alloc] initWithFormat:@"%@\n\nUnrecognized status \"%@\"", self.resultLabel.text, jsonStatus];
