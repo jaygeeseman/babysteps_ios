@@ -10,4 +10,7 @@
 
 @interface ViewController : UIViewController
 
+@property (copy, nonatomic) NSString *createUserResult;
+@property NSMutableData *receivedData;
+
 @end
