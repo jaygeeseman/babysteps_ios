@@ -94,5 +94,36 @@
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // do something with the data
     self.resultLabel.text = [[NSString alloc] initWithData:self.receivedData encoding:NSUTF8StringEncoding];
+    
+    NSError *e = nil;
+    NSDictionary *jsonResult = [NSJSONSerialization JSONObjectWithData:self.receivedData options:NSJSONReadingMutableContainers error: &e];
+    NSString *jsonStatus = jsonResult[@"status"];
+    NSString *jsonMessage = jsonResult[@"message"];
+
+// This commented block lets us know what's up with JSON parsing
+//    if (!jsonResult) {
+//        self.resultLabel.text = [[NSString alloc] initWithFormat:@"Error parsing JSON: %@", e];
+//    } else {
+//        for(NSDictionary *item in jsonResult) {
+//            self.resultLabel.text = [[NSString alloc] initWithFormat:@"%@\n\nItem: %@, Value: %@", self.resultLabel.text, item, jsonResult[item]];
+//        }
+//    }
+    
+    if (!jsonStatus || !jsonMessage) {
+        self.resultLabel.text = [[NSString alloc] initWithFormat:@"%@\n\nInvalid response. Expected 'status' and 'message' elements.", self.resultLabel.text];
+        return;
+    }
+    
+    if ([jsonStatus isEqualToString:@"success"]) {
+        // Deactivate submit button
+        
+    } else if ([jsonStatus isEqualToString:@"duplicate"]) {
+        // Select input field
+    } else if ([jsonStatus isEqualToString:@"fail"]) {
+        // Show error
+    } else {
+        // Unrecognized status
+        self.resultLabel.text = [[NSString alloc] initWithFormat:@"%@\n\nUnrecognized status \"%@\"", self.resultLabel.text, jsonStatus];
+    }
 }
 @end
