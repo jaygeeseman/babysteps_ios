@@ -32,6 +32,7 @@
 - (IBAction)createAccount:(id)sender {
     // Get username entered in the text field
     NSString *usernameString = self.usernameField.text;
+    NSString *deviceTypeString = [[NSString alloc] initWithFormat:@"%@ %@", [UIDevice currentDevice].systemName, [UIDevice currentDevice].systemVersion];
     
     // Live status
     self.resultLabel.text = [[NSString alloc] initWithFormat:@"Trying to create new account for %@...", usernameString];
@@ -39,12 +40,12 @@
     // Build the JSON POST data
     NSDictionary *postObject = [NSDictionary dictionaryWithObjectsAndKeys:
                                 usernameString, @"username",
-                                @"XXXXX", @"device_id",
-                                @"YYYYY", @"device_type",
+                                [[UIDevice currentDevice].identifierForVendor UUIDString], @"device_id",
+                                deviceTypeString, @"device_type",
                                 nil];
     NSData *jsonObject = [NSJSONSerialization dataWithJSONObject:postObject options:nil error:nil];
     NSString *postData = [[NSString alloc] initWithData:jsonObject encoding:NSUTF8StringEncoding];
-
+    
     // Asynchronously submit the POST request
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc]
                                     initWithURL:[NSURL URLWithString:@"http://localhost:9000/users"]];
