@@ -7,13 +7,13 @@
 //
 
 #import "ViewController.h"
+#import "FacebookSDK/FBLoginView.h"
 
-@interface ViewController ()
+@interface ViewController () <FBLoginViewDelegate>
 @property (weak, nonatomic) IBOutlet UITextField *usernameField;
 @property (weak, nonatomic) IBOutlet UILabel *resultLabel;
 - (IBAction)createAccount:(id)sender;
 @property (weak, nonatomic) IBOutlet UIButton *createAccountButton;
-
 @end
 
 @implementation ViewController
@@ -26,6 +26,17 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    // Override point for customization after application launch.
+    [FBLoginView class];
+//    ...
+    return YES;
+}
+
+- (void)loginViewFetchedUserInfo:(FBLoginView *)loginView user:(id<FBGraphUser>)user {
+    self.usernameField.text = user.username;
 }
 
 
